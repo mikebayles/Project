@@ -1,6 +1,10 @@
 ﻿/*
  * Public Static Void PAIN
  * Section #1
+ * Group Members: Mike Bayles
+ * Akshat Sharma
+ * Ankit Kumar
+ * Weikang Yang
 */
 
 using System;
