@@ -28,10 +28,13 @@ namespace AnimatedSprites
                 KeyboardState kbState = Keyboard.GetState();
                 // If player pressed arrow keys, move the sprite
                 if (kbState.IsKeyDown(Keys.Left) || kbState.IsKeyDown(Keys.A))
+                {
                     inputDirection.X -= 1;
+                }
                 if (kbState.IsKeyDown(Keys.Right) || kbState.IsKeyDown(Keys.D))
+                {
                     inputDirection.X += 1;
-
+                }
                 
                 //if (Keyboard.GetState(  ).IsKeyDown(Keys.Up))
                     //inputDirection.Y -= 1;

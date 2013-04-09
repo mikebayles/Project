@@ -29,6 +29,7 @@ namespace AnimatedSprites
 
         //A sprite for the player and a list of automated sprites
         UserControlledSprite player;
+        Animation player2;
         CursorSprite cursor;
         List<Sprite> spriteList = new List<Sprite>();
 
@@ -63,7 +64,9 @@ namespace AnimatedSprites
                 new Vector2(0, GraphicsDevice.Viewport.Height), new Point(30,60), 10, new Point(0, 0),
                 new Point(6, 2), new Vector2(8, 13),1000);
 
-            
+
+            player2 = new Animation(Game.Content.Load<Texture2D>(@"Images/raptor"), new Vector2(100, GraphicsDevice.Viewport.Height-30), 50,41);
+
 
             //Load several different automated sprites into the list
             spriteList.Add(new BouncingSprite(
@@ -97,7 +100,8 @@ namespace AnimatedSprites
         public override void Update(GameTime gameTime)
         {
             // Update player
-            player.Update(gameTime, Game.Window.ClientBounds);
+            player2.Update(gameTime);
+            //player.Update(gameTime, Game.Window.ClientBounds);
             cursor.Update(gameTime, Game.Window.ClientBounds);
 
             // Update all sprites
@@ -123,7 +127,8 @@ namespace AnimatedSprites
 
 
             // Draw the player
-            player.Draw(gameTime, spriteBatch);
+            //player.Draw(gameTime, spriteBatch);
+            player2.Draw(spriteBatch);
             cursor.Draw(gameTime, spriteBatch);
 
             // Draw all sprites
