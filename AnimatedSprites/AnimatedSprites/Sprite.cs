@@ -34,7 +34,7 @@ namespace AnimatedSprites
 
         // Movement data
         protected Vector2 speed;
-        protected Vector2 position;
+        public Vector2 position;
 
         // Abstract definition of direction property
         public abstract Vector2 direction

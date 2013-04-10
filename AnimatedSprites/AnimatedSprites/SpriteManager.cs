@@ -65,7 +65,7 @@ namespace AnimatedSprites
                 new Point(6, 2), new Vector2(8, 13),1000);
 
 
-            player2 = new Animation(Game.Content.Load<Texture2D>(@"Images/raptor"), new Vector2(100, GraphicsDevice.Viewport.Height-30), 50,41);
+            player2 = new Animation(Game.Content.Load<Texture2D>(@"Images/raptor"), new Vector2(100, GraphicsDevice.Viewport.Height-45), 50,41);
 
 
             //Load several different automated sprites into the list
@@ -103,6 +103,9 @@ namespace AnimatedSprites
             player2.Update(gameTime);
             //player.Update(gameTime, Game.Window.ClientBounds);
             cursor.Update(gameTime, Game.Window.ClientBounds);
+
+            if (Keyboard.GetState().IsKeyDown(Keys.H))
+                Console.WriteLine(Vector2.Distance(player2.origin, cursor.position));
 
             // Update all sprites
             foreach (Sprite s in spriteList)

@@ -102,9 +102,10 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AnimatedSpritesContent\AnimatedSpritesContent.contentproj">
-      <Name>AnimatedSpritesContent</Name>
+    <ProjectReference Include="..\AnimatedSpritesContent\ProjectContent.contentproj">
+      <Name>ProjectContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+      <Project>{8DD4669A-D8A2-496F-BF7D-D541AF9B1522}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

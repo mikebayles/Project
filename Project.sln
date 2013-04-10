@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010 Express for Windows Phone
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimatedSprites", "AnimatedSprites\AnimatedSprites\AnimatedSprites.csproj", "{5E584FB9-7988-45DA-8A3D-E6A3BBE98D09}"
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project", "AnimatedSprites\AnimatedSprites\Project.csproj", "{5E584FB9-7988-45DA-8A3D-E6A3BBE98D09}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "AnimatedSpritesContent", "AnimatedSprites\AnimatedSpritesContent\AnimatedSpritesContent.contentproj", "{8DD4669A-D8A2-496F-BF7D-D541AF9B1522}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectContent", "AnimatedSprites\AnimatedSpritesContent\ProjectContent.contentproj", "{8DD4669A-D8A2-496F-BF7D-D541AF9B1522}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
