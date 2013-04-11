@@ -12,9 +12,9 @@ namespace AnimatedSprites
     {
         Texture2D texture;
         Rectangle rectangle;
-        Vector2 position;
+        public Vector2 position;
         public Vector2 origin;
-        Vector2 velocity;
+        public Vector2 velocity;
 
         int currentFrame;
         int frameWidth;
@@ -23,17 +23,17 @@ namespace AnimatedSprites
         float timer;
         float interval = 50;
 
-        float rotation = 0;
+        public float rotation = 0;
         Vector2 distance;
 
-        enum AnimationState
+        public enum AnimationState
         {
             WalkingRight,
             WalkingLeft,
             Jumping
         }
 
-        AnimationState State;
+        public AnimationState State;
 
         public Animation(Texture2D texture, Vector2 position, int frameHeight, int frameWidth)
         {

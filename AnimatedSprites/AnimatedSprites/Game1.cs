@@ -25,6 +25,7 @@ namespace AnimatedSprites
 
         SpriteManager spriteManager;
 
+        
 
         public Game1()
         {
@@ -60,6 +61,8 @@ namespace AnimatedSprites
 
             base.Update(gameTime);
         }
+
+        
 
         protected override void Draw(GameTime gameTime)
         {

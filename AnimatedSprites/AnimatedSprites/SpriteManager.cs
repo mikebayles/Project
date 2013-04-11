@@ -32,6 +32,9 @@ namespace AnimatedSprites
         Animation player2;
         CursorSprite cursor;
         List<Sprite> spriteList = new List<Sprite>();
+        List<Bullet> bullets = new List<Bullet>();
+
+        KeyboardState pastKey;
 
         public SpriteManager(Game game)
             : base(game)
@@ -60,9 +63,9 @@ namespace AnimatedSprites
 
             //Load the player sprite
             player = new UserControlledSprite(
-                Game.Content.Load<Texture2D>(@"Images/ellenripley"),
-                new Vector2(0, GraphicsDevice.Viewport.Height), new Point(30,60), 10, new Point(0, 0),
-                new Point(6, 2), new Vector2(8, 13),1000);
+                Game.Content.Load<Texture2D>(@"Images/raptor"),
+                new Vector2(0, GraphicsDevice.Viewport.Height), new Point(45,42), 10, new Point(0, 408),
+                new Point(6, 1), new Vector2(8, 13),1000);
 
 
             player2 = new Animation(Game.Content.Load<Texture2D>(@"Images/raptor"), new Vector2(100, GraphicsDevice.Viewport.Height-45), 50,41);
@@ -113,11 +116,52 @@ namespace AnimatedSprites
                 s.Update(gameTime, Game.Window.ClientBounds);
 
                 // Check for collisions and exit game if there is one
-                if (s.collisionRect.Intersects(player.collisionRect))
-                    Game.Exit();
+                //if (s.collisionRect.Intersects(player.collisionRect))
+                    //Game.Exit();
             }
 
+            if (Keyboard.GetState().IsKeyDown(Keys.RightShift) && pastKey.IsKeyUp(Keys.RightShift))
+                Shoot();
+
+            pastKey = Keyboard.GetState();
+            UpdateBullets();
+            
+
             base.Update(gameTime);
+        }
+
+        public void UpdateBullets()
+        {
+            foreach (Bullet b in bullets)
+            {
+                b.position += b.velocity;
+                if(Vector2.Distance(b.position,player2.position) > 500)
+                    b.isVisible = false;
+            }
+            for (int i = 0; i < bullets.Count; i++)
+            {
+                if (!bullets[i].isVisible)
+                {
+                    bullets.RemoveAt(i);
+                    i--;
+                }
+            }
+        }
+
+        public void Shoot()
+        {
+            Bullet bullet = new Bullet(Game.Content.Load<Texture2D>(@"Images\bullet"));
+            bullet.velocity = new Vector2((float)Math.Cos(player2.rotation), (float)Math.Sin(player2.rotation)) * 5f + player2.velocity;
+            if (player2.State == Animation.AnimationState.WalkingRight)
+                bullet.velocity.X = Math.Abs(bullet.velocity.X);
+            else if (player2.State == Animation.AnimationState.WalkingLeft)
+                bullet.velocity.X *= -1;
+            bullet.position = player2.position + bullet.velocity * 5;
+            
+            bullet.isVisible = true;
+
+            if (bullets.Count < 20)
+                bullets.Add(bullet);
         }
 
         public override void Draw(GameTime gameTime)
@@ -137,6 +181,11 @@ namespace AnimatedSprites
             // Draw all sprites
             foreach (Sprite s in spriteList)
                 s.Draw(gameTime, spriteBatch);
+
+            foreach (Bullet b in bullets)
+            {
+                b.Draw(spriteBatch);
+            }
 
             spriteBatch.End();
             base.Draw(gameTime);
