@@ -26,6 +26,8 @@ namespace AnimatedSprites
         SpriteBatch spriteBatch;
 
         Texture2D background;
+        SpriteFont font;
+        int score = 0;
 
         //A sprite for the player and a list of automated sprites
         UserControlledSprite player;
@@ -60,7 +62,8 @@ namespace AnimatedSprites
             //Load the background
             background = Game.Content.Load<Texture2D>(@"Images\images");
 
-
+            //Loa the font
+            font = Game.Content.Load<SpriteFont>(@"ScoreFont");
             //Load the player sprite
             player = new UserControlledSprite(
                 Game.Content.Load<Texture2D>(@"Images/raptor"),
@@ -110,21 +113,26 @@ namespace AnimatedSprites
             if (Keyboard.GetState().IsKeyDown(Keys.H))
                 Console.WriteLine(Vector2.Distance(player2.origin, cursor.position));
 
+           
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter) && pastKey.IsKeyUp(Keys.Enter))
+                Shoot();
+
+            pastKey = Keyboard.GetState();
+            UpdateBullets();
+            
             // Update all sprites
             foreach (Sprite s in spriteList)
             {
                 s.Update(gameTime, Game.Window.ClientBounds);
 
                 // Check for collisions and exit game if there is one
-                //if (s.collisionRect.Intersects(player.collisionRect))
-                    //Game.Exit();
+                if (bullets.Count > 0 && s.collisionRect.Intersects(bullets[bullets.Count - 1].collisionRect))
+                {
+                    score++;
+                    bullets.RemoveAt(bullets.Count - 1);
+                }
             }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.RightShift) && pastKey.IsKeyUp(Keys.RightShift))
-                Shoot();
-
-            pastKey = Keyboard.GetState();
-            UpdateBullets();
             
 
             base.Update(gameTime);
@@ -152,10 +160,10 @@ namespace AnimatedSprites
         {
             Bullet bullet = new Bullet(Game.Content.Load<Texture2D>(@"Images\bullet"));
             bullet.velocity = new Vector2((float)Math.Cos(player2.rotation), (float)Math.Sin(player2.rotation)) * 5f + player2.velocity;
-            if (player2.State == Animation.AnimationState.WalkingRight)
-                bullet.velocity.X = Math.Abs(bullet.velocity.X);
-            else if (player2.State == Animation.AnimationState.WalkingLeft)
-                bullet.velocity.X *= -1;
+            //if (player2.State == Animation.AnimationState.WalkingRight)
+            //    bullet.velocity.X = Math.Abs(bullet.velocity.X);
+            //else if (player2.State == Animation.AnimationState.WalkingLeft)
+            //    bullet.velocity.X *= -1;
             bullet.position = player2.position + bullet.velocity * 5;
             
             bullet.isVisible = true;
@@ -172,7 +180,7 @@ namespace AnimatedSprites
             //Draw the background
             spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
 
-
+            spriteBatch.DrawString(font, "Score : " + score, new Vector2(10, 10), Color.Red);
             // Draw the player
             //player.Draw(gameTime, spriteBatch);
             player2.Draw(spriteBatch);

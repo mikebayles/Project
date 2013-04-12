@@ -45,7 +45,7 @@ namespace AnimatedSprites
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, rectangle, Color.White, rotation, origin, 1.8f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, position, rectangle, Color.White, 0f, origin, 1.8f, SpriteEffects.None, 0f);
             
         }
 
@@ -53,19 +53,20 @@ namespace AnimatedSprites
         {
             MouseState mouse = Mouse.GetState();
 
-            if (State == AnimationState.WalkingRight)
-            {
-                distance.X = mouse.X - position.X;
-                distance.Y = mouse.Y - position.Y;
-            }
-            else if (State == AnimationState.WalkingLeft)
-            {
-                distance.X = position.X - mouse.X;
-                distance.Y = position.Y - mouse.Y;
-               
-            }
+            
+            distance.X = mouse.X - position.X;
+            distance.Y = mouse.Y - position.Y;
+            
+           
 
             rotation = (float)(Math.Atan2(distance.Y,distance.X));
+
+            if (rotation < -1.8 && currentFrame < 8)
+                currentFrame = 8;
+            else if (rotation > -1.8 && currentFrame >= 8)
+                currentFrame = 0;
+           
+           
 
             rectangle = new Rectangle(currentFrame * frameWidth, 0, frameWidth, frameHeight);
             origin = new Vector2(rectangle.Width / 2, rectangle.Height / 2);
@@ -74,6 +75,9 @@ namespace AnimatedSprites
 
 
             KeyboardState kbState = Keyboard.GetState();
+
+            if (kbState.IsKeyDown(Keys.B))
+                Console.WriteLine(rotation);
 
             if(kbState.IsKeyDown(Keys.Right) || kbState.IsKeyDown(Keys.D))
             {

@@ -29,5 +29,17 @@ namespace AnimatedSprites
             spriteBatch.Draw(texture,position,null,Color.White,0f, origin, 1f, SpriteEffects.None, 0);
 
         }
+
+        public Rectangle collisionRect
+        {
+            get
+            {
+                return new Rectangle(
+                    (int)position.X ,
+                    (int)position.Y ,
+                    texture.Width,
+                    texture.Height);
+            }
+        }
     }
 }
