@@ -127,11 +127,15 @@ namespace AnimatedSprites
                 s.Update(gameTime, Game.Window.ClientBounds);
 
                 // Check for collisions and exit game if there is one
-                if (bullets.Count > 0 && s.collisionRect.Intersects(bullets[bullets.Count - 1].collisionRect))
+                foreach (Bullet b in bullets)
                 {
-                    score++;
-                    bullets.RemoveAt(bullets.Count - 1);
+                    if (s.collisionRect.Intersects(b.collisionRect))
+                    {
+                        score++;
+                        b.isVisible = false;
+                    }
                 }
+                
             }
             
 
