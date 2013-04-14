@@ -45,7 +45,7 @@ namespace AnimatedSprites
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, rectangle, Color.White, 0f, origin, 1.8f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, position, rectangle, Color.White, rotation, origin, 1.8f, SpriteEffects.None, 0f);
             
         }
 
