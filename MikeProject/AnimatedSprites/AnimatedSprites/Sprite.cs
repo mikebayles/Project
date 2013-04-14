@@ -1,13 +1,4 @@
-﻿/*
- * Public Static Void PAIN
- * Section #1
- * Group Members: Mike Bayles
- * Akshat Sharma
- * Ankit Kumar
- * Weikang Yang
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,10 +14,15 @@ namespace AnimatedSprites
         protected Point frameSize;
         Point currentFrame;
         Point sheetSize;
-        
+        protected float scale = 1;
+        protected float originalScale = 1;
+
+        // Speed stuff
+        Vector2 originalSpeed;
+
         // Collision data
         int collisionOffset;
-        
+
         // Framerate stuff
         int timeSinceLastFrame = 0;
         int millisecondsPerFrame;
@@ -34,7 +30,10 @@ namespace AnimatedSprites
 
         // Movement data
         protected Vector2 speed;
-        public Vector2 position;
+        protected Vector2 position;
+
+        // Sound stuff
+        public string collisionCueName { get; set; }
 
         // Abstract definition of direction property
         public abstract Vector2 direction
@@ -42,16 +41,29 @@ namespace AnimatedSprites
             get;
         }
 
+        // Get current position of the sprite
+        public Vector2 GetPosition
+        {
+            get { return position; }
+        }
+
+
+        // Get/set score
+        public int scoreValue { get; protected set; }
+        public int HP { get; set; }
+
         public Sprite(Texture2D textureImage, Vector2 position, Point frameSize,
-    int collisionOffset, Point currentFrame, Point sheetSize, Vector2 speed)
+            int collisionOffset, Point currentFrame, Point sheetSize, Vector2 speed,
+            string collisionCueName, int scoreValue, int HP)
             : this(textureImage, position, frameSize, collisionOffset, currentFrame,
-            sheetSize, speed, defaultMillisecondsPerFrame)
+            sheetSize, speed, defaultMillisecondsPerFrame, collisionCueName,
+            scoreValue,HP)
         {
         }
 
         public Sprite(Texture2D textureImage, Vector2 position, Point frameSize,
             int collisionOffset, Point currentFrame, Point sheetSize, Vector2 speed,
-            int millisecondsPerFrame)
+            int millisecondsPerFrame, string collisionCueName, int scoreValue, int HP)
         {
             this.textureImage = textureImage;
             this.position = position;
@@ -60,7 +72,21 @@ namespace AnimatedSprites
             this.currentFrame = currentFrame;
             this.sheetSize = sheetSize;
             this.speed = speed;
+            originalSpeed = speed;
+            this.collisionCueName = collisionCueName;
             this.millisecondsPerFrame = millisecondsPerFrame;
+            this.scoreValue = scoreValue;
+            this.HP = HP;
+        }
+
+        public Sprite(Texture2D textureImage, Vector2 position, Point frameSize,
+            int collisionOffset, Point currentFrame, Point sheetSize, Vector2 speed,
+            string collisionCueName, int scoreValue, float scale, int HP)
+            : this(textureImage, position, frameSize, collisionOffset, currentFrame,
+            sheetSize, speed, defaultMillisecondsPerFrame, collisionCueName,
+            scoreValue, HP)
+        {
+            this.scale = scale;
         }
 
         public virtual void Update(GameTime gameTime, Rectangle clientBounds)
@@ -85,14 +111,13 @@ namespace AnimatedSprites
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            // Draw the sprite
             spriteBatch.Draw(textureImage,
                 position,
                 new Rectangle(currentFrame.X * frameSize.X,
                     currentFrame.Y * frameSize.Y,
                     frameSize.X, frameSize.Y),
                 Color.White, 0, Vector2.Zero,
-                1f, SpriteEffects.None, 0);
+                scale, SpriteEffects.None, 0);
         }
 
         // Gets the collision rect based on position, framesize and collision offset
@@ -101,12 +126,45 @@ namespace AnimatedSprites
             get
             {
                 return new Rectangle(
-                    (int)position.X + collisionOffset,
-                    (int)position.Y + collisionOffset,
-                    frameSize.X - (collisionOffset * 2),
-                    frameSize.Y - (collisionOffset * 2));
+                    (int)(position.X + (collisionOffset * scale)),
+                    (int)(position.Y + (collisionOffset * scale)),
+                    (int)((frameSize.X - (collisionOffset * 2)) * scale),
+                    (int)((frameSize.Y - (collisionOffset * 2)) * scale));
             }
         }
-        
+
+        // Detect if this sprite is off the screen and irrelevant
+        public bool IsOutOfBounds(Rectangle clientRect)
+        {
+            if (position.X < -frameSize.X ||
+                position.X > clientRect.Width ||
+                position.Y < -frameSize.Y ||
+                position.Y > clientRect.Height)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public void ModifyScale(float modifier)
+        {
+            scale *= modifier;
+        }
+
+        public void ResetScale()
+        {
+            scale = originalScale;
+        }
+
+        public void ModifySpeed(float modifier)
+        {
+            speed *= modifier;
+        }
+
+        public void ResetSpeed()
+        {
+            speed = originalSpeed;
+        }
     }
 }

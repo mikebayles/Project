@@ -30,13 +30,21 @@ namespace AnimatedSprites
         int score = 0;
 
         //A sprite for the player and a list of automated sprites
-        UserControlledSprite player;
-        Animation player2;
+        Animation player;
         CursorSprite cursor;
         List<Sprite> spriteList = new List<Sprite>();
         List<Bullet> bullets = new List<Bullet>();
 
         KeyboardState pastKey;
+        KeyboardState currentKey;
+
+        MouseState pastMouse;
+        MouseState currentMouse;
+
+        int basicEnemyScoreValue = 50;
+        int basicEnemyHP = 100;
+
+        int basicBullletDamage = 50;
 
         public SpriteManager(Game game)
             : base(game)
@@ -62,35 +70,29 @@ namespace AnimatedSprites
             //Load the background
             background = Game.Content.Load<Texture2D>(@"Images\images");
 
-            //Loa the font
+            //Load the font
             font = Game.Content.Load<SpriteFont>(@"ScoreFont");
-            //Load the player sprite
-            player = new UserControlledSprite(
-                Game.Content.Load<Texture2D>(@"Images/raptor"),
-                new Vector2(0, GraphicsDevice.Viewport.Height), new Point(45,42), 10, new Point(0, 408),
-                new Point(6, 1), new Vector2(8, 13),1000);
-
-
-            player2 = new Animation(Game.Content.Load<Texture2D>(@"Images/raptor"), new Vector2(100, GraphicsDevice.Viewport.Height-45), 50,41);
+            
+            player = new Animation(Game.Content.Load<Texture2D>(@"Images/raptor2"), new Vector2(100, GraphicsDevice.Viewport.Height-45), 50,41);
 
 
             //Load several different automated sprites into the list
-            spriteList.Add(new BouncingSprite(
+            spriteList.Add(new AutomatedSprite( 
                 Game.Content.Load<Texture2D>(@"Images/skullball"),
                 new Vector2(150, 150), new Point(75, 75), 10, new Point(0, 0),
-                new Point(6, 8), new Vector2(2,2)));
-            spriteList.Add(new BouncingSprite(
+                new Point(6, 8), new Vector2(2,2),null,basicEnemyScoreValue,basicEnemyHP));
+            spriteList.Add(new AutomatedSprite(
                 Game.Content.Load<Texture2D>(@"Images/skullball"),
                 new Vector2(300, 150), new Point(75, 75), 10, new Point(0, 0),
-                new Point(6, 8), new Vector2(2,2)));
-            spriteList.Add(new BouncingSprite(
+                new Point(6, 8), new Vector2(2,2),null,basicEnemyScoreValue,basicEnemyHP));
+            spriteList.Add(new AutomatedSprite(
                 Game.Content.Load<Texture2D>(@"Images/skullball"),
                 new Vector2(139, 357), new Point(75, 75), 10, new Point(0, 0),
-                new Point(6, 8), new Vector2(2,2)));
-            spriteList.Add(new BouncingSprite(
+                new Point(6, 8), new Vector2(2,2),null,basicEnemyScoreValue,basicEnemyHP));
+            spriteList.Add(new AutomatedSprite(
                 Game.Content.Load<Texture2D>(@"Images/skullball"),
                 new Vector2(600, 400), new Point(75, 75), 10, new Point(0, 0),
-                new Point(6, 8), new Vector2(2,2)));
+                new Point(6, 8), new Vector2(2,2),null,basicEnemyScoreValue,basicEnemyHP));
 
             cursor = new CursorSprite(
                 Game.Content.Load<Texture2D>(@"Images/cross1"), new Vector2(100, 100), new Point(50, 50), 10, new Point(0, 0),
@@ -105,38 +107,47 @@ namespace AnimatedSprites
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
+            currentKey = Keyboard.GetState();
+            currentMouse = Mouse.GetState();
+
             // Update player
-            player2.Update(gameTime);
-            //player.Update(gameTime, Game.Window.ClientBounds);
+            player.Update(gameTime);
             cursor.Update(gameTime, Game.Window.ClientBounds);
 
-            if (Keyboard.GetState().IsKeyDown(Keys.H))
-                Console.WriteLine(Vector2.Distance(player2.origin, cursor.position));
 
-           
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter) && pastKey.IsKeyUp(Keys.Enter))
+            if (currentMouse.LeftButton == ButtonState.Pressed && pastMouse.LeftButton == ButtonState.Released)
                 Shoot();
 
             pastKey = Keyboard.GetState();
+            pastMouse = Mouse.GetState();
             UpdateBullets();
             
             // Update all sprites
-            foreach (Sprite s in spriteList)
+            for (int i = 0; i < spriteList.Count; i++)
             {
+                Sprite s = spriteList[i];
                 s.Update(gameTime, Game.Window.ClientBounds);
-
                 // Check for collisions and exit game if there is one
                 foreach (Bullet b in bullets)
                 {
                     if (s.collisionRect.Intersects(b.collisionRect))
                     {
-                        score++;
+                        
                         b.isVisible = false;
+                        s.HP -= b.damageValue;
+                        if (currentKey.IsKeyDown(Keys.H))
+                            Console.WriteLine(s.HP);
+                        if(s.HP == 0 && !(s is CursorSprite))
+                        {
+                            score += s.scoreValue;
+                            spriteList.RemoveAt(i);
+                            i--;
+                        }
                     }
                 }
-                
             }
+
             
 
             base.Update(gameTime);
@@ -147,7 +158,7 @@ namespace AnimatedSprites
             foreach (Bullet b in bullets)
             {
                 b.position += b.velocity;
-                if(Vector2.Distance(b.position,player2.position) > 500)
+                if(Vector2.Distance(b.position,player.position) > 500)
                     b.isVisible = false;
             }
             for (int i = 0; i < bullets.Count; i++)
@@ -162,13 +173,10 @@ namespace AnimatedSprites
 
         public void Shoot()
         {
-            Bullet bullet = new Bullet(Game.Content.Load<Texture2D>(@"Images\bullet"));
-            bullet.velocity = new Vector2((float)Math.Cos(player2.rotation), (float)Math.Sin(player2.rotation)) * 5f + player2.velocity;
-            //if (player2.State == Animation.AnimationState.WalkingRight)
-            //    bullet.velocity.X = Math.Abs(bullet.velocity.X);
-            //else if (player2.State == Animation.AnimationState.WalkingLeft)
-            //    bullet.velocity.X *= -1;
-            bullet.position = player2.position + bullet.velocity * 5;
+            Bullet bullet = new Bullet(Game.Content.Load<Texture2D>(@"Images\bullet"),basicBullletDamage);
+            bullet.velocity = new Vector2((float)Math.Cos(player.rotation), (float)Math.Sin(player.rotation)) * 5f + player.velocity;
+
+            bullet.position = player.position + bullet.velocity * 5;
             
             bullet.isVisible = true;
 
@@ -186,8 +194,7 @@ namespace AnimatedSprites
 
             spriteBatch.DrawString(font, "Score : " + score, new Vector2(10, 10), Color.Red);
             // Draw the player
-            //player.Draw(gameTime, spriteBatch);
-            player2.Draw(spriteBatch);
+            player.Draw(spriteBatch);
             cursor.Draw(gameTime, spriteBatch);
 
             // Draw all sprites

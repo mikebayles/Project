@@ -17,9 +17,12 @@ namespace AnimatedSprites
 
         public bool isVisible;
 
-        public Bullet(Texture2D texture)
+        public int damageValue { get; set; }
+
+        public Bullet(Texture2D texture,int damage)
         {
             this.texture = texture;
+            this.damageValue = damage;
             isVisible = false;
         }
 

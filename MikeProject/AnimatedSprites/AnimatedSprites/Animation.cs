@@ -26,6 +26,9 @@ namespace AnimatedSprites
         public float rotation = 0;
         Vector2 distance;
 
+        int normalSpeed = 3;
+        int extraSpeed = 6;
+
         public enum AnimationState
         {
             WalkingRight,
@@ -33,7 +36,7 @@ namespace AnimatedSprites
             Jumping
         }
 
-        public AnimationState State;
+        //public AnimationState State;
 
         public Animation(Texture2D texture, Vector2 position, int frameHeight, int frameWidth)
         {
@@ -45,7 +48,7 @@ namespace AnimatedSprites
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, rectangle, Color.White, rotation, origin, 1.8f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, position, rectangle, Color.White, 0f, origin, 1.8f, SpriteEffects.None, 0f);
             
         }
 
@@ -82,18 +85,18 @@ namespace AnimatedSprites
             if(kbState.IsKeyDown(Keys.Right) || kbState.IsKeyDown(Keys.D))
             {
                 AnimateRight(gametime);
-                if(kbState.IsKeyDown(Keys.Space))
-                    velocity.X = 6;
+                if (kbState.IsKeyDown(Keys.Space))
+                    velocity.X = extraSpeed;
                 else
-                    velocity.X = 3;
+                    velocity.X = normalSpeed;
             }
             else if(kbState.IsKeyDown(Keys.Left) || kbState.IsKeyDown(Keys.A))
             {
                 AnimateLeft(gametime);
-                if(kbState.IsKeyDown(Keys.Space))
-                    velocity.X = -6;
+                if (kbState.IsKeyDown(Keys.Space))
+                    velocity.X = -extraSpeed;
                 else
-                    velocity.X = -3;
+                    velocity.X = -normalSpeed;
             }
             else
                 velocity = Vector2.Zero;
@@ -101,7 +104,7 @@ namespace AnimatedSprites
 
         public void AnimateRight(GameTime gameTime)
         {
-            State = AnimationState.WalkingRight;
+            
             timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds / 2;
             
             if (timer > interval)
@@ -115,7 +118,7 @@ namespace AnimatedSprites
 
         public void AnimateLeft(GameTime gameTime)
         {
-            State = AnimationState.WalkingLeft;
+            
             timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds / 2;
 
             if (timer > interval)

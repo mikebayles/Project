@@ -32,19 +32,14 @@ namespace AnimatedSprites
             }
         }
 
-        public CursorSprite(Texture2D textureImage, Vector2 position,
-            Point frameSize, int collisionOffset, Point currentFrame, Point sheetSize,
-            Vector2 speed)
-            : base(textureImage, position, frameSize, collisionOffset, currentFrame,
-            sheetSize, speed)
-        {
-        }
+
 
         public CursorSprite(Texture2D textureImage, Vector2 position,
             Point frameSize, int collisionOffset, Point currentFrame, Point sheetSize,
-            Vector2 speed, int millisecondsPerFrame)
-            : base(textureImage, position, frameSize, collisionOffset, currentFrame,
-            sheetSize, speed, millisecondsPerFrame)
+            Vector2 speed)
+            :base(textureImage,position,frameSize,collisionOffset,currentFrame,sheetSize,
+            speed,null,0,0)
+
         {
         }
 
