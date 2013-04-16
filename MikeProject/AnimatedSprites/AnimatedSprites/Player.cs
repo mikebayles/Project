@@ -8,10 +8,10 @@ using Microsoft.Xna.Framework.Input;
 
 namespace AnimatedSprites
 {
-    class Animation
+    class Player
     {
         Texture2D texture;
-        Rectangle rectangle;
+        Rectangle frameRectangle;
         public Vector2 position;
         public Vector2 origin;
         public Vector2 velocity;
@@ -19,6 +19,7 @@ namespace AnimatedSprites
         int currentFrame;
         int frameWidth;
         int frameHeight;
+        int level = 0;
 
         float timer;
         float interval = 50;
@@ -29,26 +30,47 @@ namespace AnimatedSprites
         int normalSpeed = 3;
         int extraSpeed = 6;
 
-        public enum AnimationState
+        bool hasJumped;
+        float jumpSpeed = 0;
+        Vector2 startPos;
+
+        public int HP { get; set; }
+
+        public enum Weapon
         {
-            WalkingRight,
-            WalkingLeft,
-            Jumping
+            MachineGun,
+            RocketLauncher
         }
 
-        //public AnimationState State;
+        public Weapon SelectedWeapon { get; protected set; }
+        public Rectangle collisionRect
+        {
+            get
+            {
+                return new Rectangle(
+                    (int)position.X,
+                    (int)position.Y,
+                    frameRectangle.Width,
+                    frameRectangle.Height);
+            }
+        }
 
-        public Animation(Texture2D texture, Vector2 position, int frameHeight, int frameWidth)
+
+        public Player(Texture2D texture, Vector2 position, int frameHeight, int frameWidth)
         {
             this.texture = texture;
             this.position = position;
+            startPos = position;
             this.frameHeight = frameHeight;
             this.frameWidth = frameWidth;
+            HP = 10000;
+            hasJumped = true;
+            SelectedWeapon = Weapon.MachineGun;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, rectangle, Color.White, 0f, origin, 1.8f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, position, frameRectangle, Color.White, 0f, origin, 2.8f, SpriteEffects.None, 0f);
             
         }
 
@@ -64,42 +86,85 @@ namespace AnimatedSprites
 
             rotation = (float)(Math.Atan2(distance.Y,distance.X));
 
-            if (rotation < -1.8 && currentFrame < 8)
-                currentFrame = 8;
-            else if (rotation > -1.8 && currentFrame >= 8)
-                currentFrame = 0;
+            //if (rotation < -1.8 && currentFrame < 8)
+            //    currentFrame = 8;
+            //else if (rotation > -1.8 && currentFrame >= 8)
+            //    currentFrame = 0;
            
            
 
-            rectangle = new Rectangle(currentFrame * frameWidth, 0, frameWidth, frameHeight);
-            origin = new Vector2(rectangle.Width / 2, rectangle.Height / 2);
+            frameRectangle = new Rectangle(currentFrame * frameWidth, frameHeight * level, frameWidth, frameHeight);
+            origin = new Vector2(frameRectangle.Width / 2, frameRectangle.Height / 2);
             position = position + velocity;
 
 
 
             KeyboardState kbState = Keyboard.GetState();
 
-            if (kbState.IsKeyDown(Keys.B))
-                Console.WriteLine(rotation);
 
             if(kbState.IsKeyDown(Keys.Right) || kbState.IsKeyDown(Keys.D))
             {
                 AnimateRight(gametime);
                 if (kbState.IsKeyDown(Keys.Space))
+                {
+                    interval = 20;
                     velocity.X = extraSpeed;
+                }
                 else
+                {
+                    interval = 50;
                     velocity.X = normalSpeed;
+                }
             }
             else if(kbState.IsKeyDown(Keys.Left) || kbState.IsKeyDown(Keys.A))
             {
                 AnimateLeft(gametime);
                 if (kbState.IsKeyDown(Keys.Space))
+                {
+                    interval = 20;
                     velocity.X = -extraSpeed;
+                }
                 else
+                {
+                    interval = 50;
                     velocity.X = -normalSpeed;
+                }
             }
             else
                 velocity = Vector2.Zero;
+
+            if (hasJumped)
+            {
+                position.Y += jumpSpeed;
+                jumpSpeed += 1;
+                if (position.Y > startPos.Y)
+                {
+                    position.Y = startPos.Y;
+                    hasJumped = false;
+                }
+            }
+
+            else 
+            {
+                if (kbState.IsKeyDown(Keys.Up) || kbState.IsKeyDown(Keys.W))
+                {                  
+                    hasJumped = true;
+                    jumpSpeed = -16;
+                }
+            }
+
+            if (kbState.IsKeyDown(Keys.D1))
+            {
+                level = 0;
+                SelectedWeapon = Weapon.MachineGun;
+            }
+            else if (kbState.IsKeyDown(Keys.D2))
+            {
+                level = 1;
+                SelectedWeapon = Weapon.RocketLauncher;
+            }
+ 
+
         }
 
         public void AnimateRight(GameTime gameTime)

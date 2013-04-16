@@ -31,7 +31,11 @@ namespace AnimatedSprites
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            rnd = new Random();
         }
+
+        public Random rnd { get; set; }
 
         protected override void Initialize()
         {

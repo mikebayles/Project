@@ -86,7 +86,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animation.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="AutomatedSprite.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="CursorSprite.cs" />
@@ -95,7 +95,6 @@
     <Compile Include="Game1.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteManager.cs" />
-    <Compile Include="UserControlledSprite.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

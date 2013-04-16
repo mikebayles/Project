@@ -49,21 +49,15 @@ namespace AnimatedSprites
 
 
         // Get/set score
-        public int scoreValue { get; protected set; }
+        public int ScoreValue { get; protected set; }
         public int HP { get; set; }
+        public int Damage { get; set; }
+
+
 
         public Sprite(Texture2D textureImage, Vector2 position, Point frameSize,
             int collisionOffset, Point currentFrame, Point sheetSize, Vector2 speed,
-            string collisionCueName, int scoreValue, int HP)
-            : this(textureImage, position, frameSize, collisionOffset, currentFrame,
-            sheetSize, speed, defaultMillisecondsPerFrame, collisionCueName,
-            scoreValue,HP)
-        {
-        }
-
-        public Sprite(Texture2D textureImage, Vector2 position, Point frameSize,
-            int collisionOffset, Point currentFrame, Point sheetSize, Vector2 speed,
-            int millisecondsPerFrame, string collisionCueName, int scoreValue, int HP)
+            int millisecondsPerFrame, string collisionCueName, float scale, int scoreValue, int HP, int Damage)
         {
             this.textureImage = textureImage;
             this.position = position;
@@ -75,19 +69,13 @@ namespace AnimatedSprites
             originalSpeed = speed;
             this.collisionCueName = collisionCueName;
             this.millisecondsPerFrame = millisecondsPerFrame;
-            this.scoreValue = scoreValue;
+            this.ScoreValue = scoreValue;
             this.HP = HP;
-        }
-
-        public Sprite(Texture2D textureImage, Vector2 position, Point frameSize,
-            int collisionOffset, Point currentFrame, Point sheetSize, Vector2 speed,
-            string collisionCueName, int scoreValue, float scale, int HP)
-            : this(textureImage, position, frameSize, collisionOffset, currentFrame,
-            sheetSize, speed, defaultMillisecondsPerFrame, collisionCueName,
-            scoreValue, HP)
-        {
+            this.Damage = Damage;
             this.scale = scale;
         }
+
+
 
         public virtual void Update(GameTime gameTime, Rectangle clientBounds)
         {
