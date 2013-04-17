@@ -70,7 +70,7 @@ namespace AnimatedSprites
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, frameRectangle, Color.White, 0f, origin, 2.8f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, position, frameRectangle, Color.White, 0f, origin, 1.8f, SpriteEffects.None, 0f);
             
         }
 

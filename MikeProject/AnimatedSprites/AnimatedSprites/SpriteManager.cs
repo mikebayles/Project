@@ -86,7 +86,7 @@ namespace AnimatedSprites
             //Load the font
             font = Game.Content.Load<SpriteFont>(@"ScoreFont");
             
-            player = new Player(Game.Content.Load<Texture2D>(@"Images/raptor3"), new Vector2(100, GraphicsDevice.Viewport.Height-145), 50,41);
+            player = new Player(Game.Content.Load<Texture2D>(@"Images/raptor3"), new Vector2(100, GraphicsDevice.Viewport.Height-45), 50,41);
 
 
             cursor = new CursorSprite(
@@ -104,7 +104,7 @@ namespace AnimatedSprites
         {
             // Time to spawn enemy?
             nextSpawnTime -= gameTime.ElapsedGameTime.Milliseconds;
-            if (false && nextSpawnTime < 0)
+            if (nextSpawnTime < 0)
             {
                 SpawnEnemy();
 
