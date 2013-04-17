@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MainMenu.cs" />
     <Compile Include="Projectile.cs" />
     <Compile Include="UserControlledSprite.cs" />
     <Compile Include="Player.cs" />
