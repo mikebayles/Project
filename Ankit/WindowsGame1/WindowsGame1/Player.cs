@@ -22,7 +22,7 @@ namespace WindowsGame1
         int HP = 100;
         Vector2 position;
 
-
+        
         public void GetInput()
         {
 

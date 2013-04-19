@@ -36,6 +36,9 @@ namespace AnimatedSprites
 
         public int HP { get; set; }
 
+        SpriteEffects currentEffect = SpriteEffects.None;
+        
+
         public enum Weapon
         {
             MachineGun,
@@ -70,7 +73,8 @@ namespace AnimatedSprites
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, frameRectangle, Color.White, 0f, origin, 1.8f, SpriteEffects.None, 0f);
+
+            spriteBatch.Draw(texture, position, frameRectangle, Color.White, 0f, origin, 1.8f, currentEffect, 0f);
             
         }
 
@@ -81,8 +85,13 @@ namespace AnimatedSprites
             
             distance.X = mouse.X - position.X;
             distance.Y = mouse.Y - position.Y;
+
+            if (mouse.X < position.X)
+                currentEffect = SpriteEffects.FlipHorizontally;
+            else
+                currentEffect = SpriteEffects.None;
             
-           
+
 
             rotation = (float)(Math.Atan2(distance.Y,distance.X));
 
@@ -118,7 +127,7 @@ namespace AnimatedSprites
             }
             else if(kbState.IsKeyDown(Keys.Left) || kbState.IsKeyDown(Keys.A))
             {
-                AnimateLeft(gametime);
+                AnimateRight(gametime);
                 if (kbState.IsKeyDown(Keys.Space))
                 {
                     interval = 20;
@@ -163,7 +172,7 @@ namespace AnimatedSprites
                 level = 1;
                 SelectedWeapon = Weapon.RocketLauncher;
             }
- 
+
 
         }
 
@@ -194,5 +203,7 @@ namespace AnimatedSprites
                     currentFrame = 8;
             }
         }
+
+
     }
 }

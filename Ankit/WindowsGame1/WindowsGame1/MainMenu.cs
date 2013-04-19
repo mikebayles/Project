@@ -41,7 +41,7 @@ namespace WindowsGame1
             {
                 if (selected == false)
                 {
-                    spriteBatch.DrawString(font, text, new Vector2(area.X, area.Y), Color.Black);
+                    spriteBatch.DrawString(font, text, new Vector2(area.X, area.Y), Color.Red);
                  
                 }
                 if (selected == true)

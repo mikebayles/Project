@@ -105,7 +105,7 @@ namespace AnimatedSprites
                     currentFrame.Y * frameSize.Y,
                     frameSize.X, frameSize.Y),
                 Color.White, 0, Vector2.Zero,
-                scale, SpriteEffects.None, 0);
+                scale, SpriteEffects.FlipHorizontally, 0);
         }
 
         // Gets the collision rect based on position, framesize and collision offset

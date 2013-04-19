@@ -3,6 +3,8 @@
  * Section #1
 */
 
+
+//TODO: more guns, alien sprites (with animations), fix the bullet speed when player faces opposite, allow for user to go to next area, add big boss
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,8 +27,8 @@ namespace AnimatedSprites
         //SpriteBatch for drawing
         SpriteBatch spriteBatch;
 
-        Texture2D background;
-        SpriteFont font;
+        public Texture2D background;
+        public SpriteFont font;
         int score = 0;
 
         //A sprite for the player and a list of automated sprites
@@ -59,6 +61,11 @@ namespace AnimatedSprites
         //int enemyMaxSpeed = 6;
         int nextSpawnTime = 0;
 
+        Texture2D health;
+        Rectangle healthRect;
+
+        //Background bg;
+
         public SpriteManager(Game game)
             : base(game)
         {
@@ -82,17 +89,19 @@ namespace AnimatedSprites
 
             //Load the background
             background = Game.Content.Load<Texture2D>(@"Images\images");
-
+            //bg = new Background(1570);
             //Load the font
             font = Game.Content.Load<SpriteFont>(@"ScoreFont");
-            
-            player = new Player(Game.Content.Load<Texture2D>(@"Images/raptor3"), new Vector2(100, GraphicsDevice.Viewport.Height-45), 50,41);
 
+            player = new Player(Game.Content.Load<Texture2D>(@"Images/raptor3"), new Vector2(100, GraphicsDevice.Viewport.Height - 45), 50, 41);
 
+            health = Game.Content.Load<Texture2D>(@"Images/health");
+            healthRect = new Rectangle(350, 10, player.HP/50, 20);
             cursor = new CursorSprite(
                 Game.Content.Load<Texture2D>(@"Images/cross1"), new Vector2(100, 100), new Point(50, 50), 10, new Point(0, 0),
                 new Point(1, 1), new Vector2(2, 2));
 
+            //bg.LoadContent(Game.Content);
             base.LoadContent();
         }
 
@@ -102,6 +111,7 @@ namespace AnimatedSprites
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
+            //bg.Update(gameTime, player.velocity.X);
             // Time to spawn enemy?
             nextSpawnTime -= gameTime.ElapsedGameTime.Milliseconds;
             if (nextSpawnTime < 0)
@@ -156,8 +166,10 @@ namespace AnimatedSprites
             }
 
 
-            
+            if (player.HP > 0)
+                healthRect.Width = player.HP/50;
 
+            
              base.Update(gameTime);
         }
 
@@ -185,11 +197,11 @@ namespace AnimatedSprites
             if(player.SelectedWeapon == Player.Weapon.MachineGun)
              bullet= new Bullet(Game.Content.Load<Texture2D>(@"Images\bullet"),0f,machineGunBulletDamage,0);
             else if(player.SelectedWeapon == Player.Weapon.RocketLauncher)
-                bullet = new Bullet(Game.Content.Load<Texture2D>(@"Images\projectile"),.5f, rocketLauncherDamage, 10);
+                bullet = new Bullet(Game.Content.Load<Texture2D>(@"Images\projectile"),player.rotation, rocketLauncherDamage, 10);
 
-            bullet.velocity = new Vector2((float)Math.Cos(player.rotation), (float)Math.Sin(player.rotation)) * 5f + new Vector2(Math.Abs(player.velocity.X),Math.Abs(player.velocity.Y));
+            bullet.velocity = new Vector2((float)Math.Cos(player.rotation)*2, (float)Math.Sin(player.rotation)) * 5f;// new Vector2(player.velocity.X, player.velocity.Y);
 
-            bullet.position = player.position + bullet.velocity * 5;
+            bullet.position = player.position + bullet.velocity ;
             
             bullet.isVisible = true;
 
@@ -218,22 +230,27 @@ namespace AnimatedSprites
 
         private void SpawnEnemy()
         {
-            spriteList.Add(new AutomatedSprite(                
-                Game.Content.Load<Texture2D>(@"Images/skullball"),
-                new Vector2(700,400), new Point(75, 75), 10, new Point(0, 0),
-                new Point(6, 8), new Vector2(-2, 0),16, null, 1f, basicEnemyScoreValue, basicEnemyHP,basicEnemyDamage));
+            //spriteList.Add(new AutomatedSprite(                
+            //    Game.Content.Load<Texture2D>(@"Images/classEnemy"),
+            //    new Vector2(700,400), new Point(75, 75), 10, new Point(0, 0),
+            //    new Point(6, 8), new Vector2(-2, 0),16, null, 1f, basicEnemyScoreValue, basicEnemyHP,basicEnemyDamage));
+
+            spriteList.Add(new AutomatedSprite(
+                Game.Content.Load<Texture2D>(@"Images/classEnemy"),new Vector2(700,400),new Point(30,40),0,Point.Zero,new Point(7,1),new Vector2(-2,0),
+                36, null, 2f, 10,10,10));
         }
         public override void Draw(GameTime gameTime)
         {
 
             spriteBatch.Begin();
-
+            //bg.Draw(spriteBatch);
             //Draw the background
             spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
             
             spriteBatch.DrawString(font, "Score : " + score, new Vector2(10, 10), Color.Red);
             // Draw the player
             player.Draw(spriteBatch);
+            spriteBatch.Draw(health, healthRect, Color.White);
             cursor.Draw(gameTime, spriteBatch);
 
             // Draw all sprites
@@ -244,6 +261,8 @@ namespace AnimatedSprites
             {
                 b.Draw(spriteBatch);
             }
+
+            
 
             spriteBatch.End();
             base.Draw(gameTime);
