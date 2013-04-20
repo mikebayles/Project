@@ -47,11 +47,22 @@ namespace AnimatedSprites
         int basicEnemyHP = 100;
         int basicEnemyDamage = 10;
 
+        int midEnemyScoreValue = 100;
+        int midEnemyHP = 200;
+        int midEnemyDamage = 30;
+
+        int advEnemyScoreValue = 150;
+        int advEnemyHP = 500;
+        int advEnemyDamage = 100;
+
         int machineGunBulletDamage = 50;
         int rocketLauncherDamage = 80;
+        int lazerDamage = 1000;
+
+        int nextLazerTime = 3500;
 
         //Spawn time variables
-        //int nextSpawnTimeChange = 5000;
+        //int nextSpawnTimeChange = 3500;
         //int timeSinceLastSpawnTimeChange = 0;
 
         // Variables for spawning new enemies
@@ -60,7 +71,7 @@ namespace AnimatedSprites
         //int enemyMinSpeed = 2;
         //int enemyMaxSpeed = 6;
         int nextSpawnTime = 0;
-
+        
         Texture2D health;
         Rectangle healthRect;
 
@@ -113,6 +124,7 @@ namespace AnimatedSprites
         {
             //bg.Update(gameTime, player.velocity.X);
             // Time to spawn enemy?
+            nextLazerTime -= gameTime.ElapsedGameTime.Milliseconds;
             nextSpawnTime -= gameTime.ElapsedGameTime.Milliseconds;
             if (nextSpawnTime < 0)
             {
@@ -133,6 +145,16 @@ namespace AnimatedSprites
 
             if (currentMouse.LeftButton == ButtonState.Pressed && pastMouse.LeftButton == ButtonState.Released)
                 Shoot();
+
+            if (nextLazerTime <= 0)
+            {
+                if (currentMouse.RightButton == ButtonState.Pressed && pastMouse.RightButton == ButtonState.Released)
+                {
+                    ShootLazer();
+
+                    nextLazerTime = 3500;
+                }
+            }
 
             pastKey = Keyboard.GetState();
             pastMouse = Mouse.GetState();
@@ -178,7 +200,7 @@ namespace AnimatedSprites
             foreach (Bullet b in bullets)
             {
                 b.position += b.velocity;
-                if(Vector2.Distance(b.position,player.position) > 500)
+                if(Vector2.Distance(b.position,player.position) > 1000)
                     b.isVisible = false;
             }
             for (int i = 0; i < bullets.Count; i++)
@@ -195,9 +217,9 @@ namespace AnimatedSprites
         {
             Bullet bullet = null;
             if(player.SelectedWeapon == Player.Weapon.MachineGun)
-             bullet= new Bullet(Game.Content.Load<Texture2D>(@"Images\bullet"),0f,machineGunBulletDamage,0);
+             bullet= new Bullet(Game.Content.Load<Texture2D>(@"Images\bullet"),0f,machineGunBulletDamage,0,0);
             else if(player.SelectedWeapon == Player.Weapon.RocketLauncher)
-                bullet = new Bullet(Game.Content.Load<Texture2D>(@"Images\projectile"),player.rotation, rocketLauncherDamage, 10);
+                bullet = new Bullet(Game.Content.Load<Texture2D>(@"Images\projectile"),player.rotation, rocketLauncherDamage, 5,20);
 
             bullet.velocity = new Vector2((float)Math.Cos(player.rotation)*2, (float)Math.Sin(player.rotation)) * 5f;// new Vector2(player.velocity.X, player.velocity.Y);
 
@@ -209,6 +231,16 @@ namespace AnimatedSprites
                 bullets.Add(bullet);
         }
 
+        public void ShootLazer()
+        {
+            Bullet bullet = new Bullet(Game.Content.Load<Texture2D>(@"Images\lazer"), 0f, 1000, 50,0);
+            bullet.position = new Vector2(currentMouse.X, 0);
+            bullet.velocity = new Vector2(0, 15);
+            bullet.isVisible = true;
+
+            bullets.Add(bullet);
+        }
+
         private void ResetSpawnTime()
         {
             if (score > 1000 && score < 2000)
@@ -218,8 +250,8 @@ namespace AnimatedSprites
             }
             else if (score > 2000)
             {
-                enemySpawnMinMilliseconds = 100;
-                enemySpawnMaxMilliseconds = 400;
+                enemySpawnMinMilliseconds = 300;
+                enemySpawnMaxMilliseconds = 600;
             }
 
             // Set the next spawn time for an enemy
@@ -230,14 +262,25 @@ namespace AnimatedSprites
 
         private void SpawnEnemy()
         {
-            //spriteList.Add(new AutomatedSprite(                
-            //    Game.Content.Load<Texture2D>(@"Images/classEnemy"),
-            //    new Vector2(700,400), new Point(75, 75), 10, new Point(0, 0),
-            //    new Point(6, 8), new Vector2(-2, 0),16, null, 1f, basicEnemyScoreValue, basicEnemyHP,basicEnemyDamage));
+                
 
-            spriteList.Add(new AutomatedSprite(
-                Game.Content.Load<Texture2D>(@"Images/classEnemy"),new Vector2(700,400),new Point(30,40),0,Point.Zero,new Point(7,1),new Vector2(-2,0),
-                36, null, 2f, 10,10,10));
+            if (score <= 1000)
+            {
+                spriteList.Add(new AutomatedSprite(Game.Content.Load<Texture2D>(@"Images/femaleEnemy"), new Vector2(700, 400), new Point(30, 40),
+                    10, Point.Zero, new Point(7, 1), new Vector2(-1, 0), 56, null, 2f, basicEnemyScoreValue, basicEnemyHP, basicEnemyDamage));
+            }
+            else if (score <= 2000)
+            {
+                spriteList.Add(new AutomatedSprite(Game.Content.Load<Texture2D>(@"Images/classEnemy"), new Vector2(700, 400), new Point(30, 40),
+                    10, Point.Zero, new Point(7, 1), new Vector2(-2, 0), 56, null, 2f, midEnemyScoreValue, midEnemyHP, midEnemyDamage));
+            }
+            else
+            {
+                spriteList.Add(new AutomatedSprite(
+                    Game.Content.Load<Texture2D>(@"Images/fatEnemy"), new Vector2(700, 330), new Point(47, 70), 
+                    10, Point.Zero, new Point(4, 1), new Vector2(-3, 0),
+                    126, null, 2f, advEnemyScoreValue, advEnemyHP, advEnemyDamage));
+            }
         }
         public override void Draw(GameTime gameTime)
         {

@@ -106,7 +106,7 @@ namespace AnimatedSprites
                     {
                         Initialize();  //resets the sprites
                         gamestate = GameState.InGame;
-                        
+                        IsMouseVisible = false;
                         spriteManager.Enabled = true;
                         spriteManager.Visible = true;
                         menuButtons.RemoveRange(0, menuButtons.Count);
