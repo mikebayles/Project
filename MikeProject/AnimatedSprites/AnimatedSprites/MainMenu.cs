@@ -14,18 +14,18 @@ namespace AnimatedSprites
         public string text = "MainMenu";
         public Rectangle area;
 
-        public bool enabled { get; set; }
+        
 
         public MainMenu(Rectangle Area, string Text)
         {
             area = Area;
             text = Text;
-            enabled = true;
+            
         }
 
         public void mouseOver(MouseState mbd)
         {
-            if (mbd.X > area.X && mbd.X < area.X + area.Width && mbd.Y > area.Y && mbd.Y > area.Y + area.Height)
+            if (mbd.X > area.X && mbd.X < area.X + area.Width && mbd.Y > area.Y && mbd.Y < area.Y + area.Height)
             {
                 selected = true;
             }
@@ -38,12 +38,12 @@ namespace AnimatedSprites
 
         public void Draw(SpriteBatch spriteBatch, SpriteFont font)
         {
-            if (selected == false && enabled)
+            if (selected == false)
             {
                 spriteBatch.DrawString(font, text, new Vector2(area.X, area.Y), Color.Red);
 
             }
-            if (selected == true && enabled)
+            if (selected == true)
             {
                 spriteBatch.DrawString(font, text, new Vector2(area.X, area.Y), Color.White);
             }

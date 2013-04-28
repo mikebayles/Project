@@ -29,7 +29,7 @@ namespace AnimatedSprites
         MouseState Prevmbd;
         
 
-        enum GameState
+        public enum GameState
         {
             Menu,
             Play,
@@ -42,7 +42,7 @@ namespace AnimatedSprites
         }
         
 
-        GameState gamestate = GameState.Menu;
+        public GameState gamestate = GameState.Menu;
 
         List<MainMenu> menuButtons = new List<MainMenu>();
         Texture2D mainmenuTexture;
@@ -136,10 +136,11 @@ namespace AnimatedSprites
                     }
                     break;
                 case GameState.GameOver:
-                    if (keyboard.IsKeyDown(Keys.Q))
-                    {
-                        gamestate = GameState.Menu;
-                    }
+                    
+                    
+                    spriteManager.Enabled = false;
+                    spriteManager.Visible = false;
+                    
                     break;
                 case GameState.GamePause:
                     if (keyboard.IsKeyDown(Keys.Space))
@@ -324,6 +325,17 @@ namespace AnimatedSprites
                         new Vector2((Window.ClientBounds.Width / 2) - (spriteManager.font.MeasureString(text).X / 2),
                         (Window.ClientBounds.Height / 2) - (spriteManager.font.MeasureString(text).Y / 2)),
                         Color.Black, 0, Vector2.Zero,
+                        1, SpriteEffects.None, 1);
+                    spriteBatch.End();
+                    break;
+
+                case GameState.GameOver:
+                    text = "Game Over!";
+                    spriteBatch.Begin();
+                    spriteBatch.DrawString(spriteManager.font, text,
+                        new Vector2((Window.ClientBounds.Width / 2) - (spriteManager.font.MeasureString(text).X / 2),
+                        (Window.ClientBounds.Height / 2) - (spriteManager.font.MeasureString(text).Y / 2)),
+                        Color.Green, 0, Vector2.Zero,
                         1, SpriteEffects.None, 1);
                     spriteBatch.End();
                     break;

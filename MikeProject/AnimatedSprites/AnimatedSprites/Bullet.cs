@@ -20,6 +20,7 @@ namespace AnimatedSprites
         Vector2 aoeRange;
         float rotation;
         public int damageValue { get; set; }
+        public bool keepGoing { get; set; }
 
         public Bullet(Texture2D texture,float rotation, int damage, int xRange, int yRange)
         {
