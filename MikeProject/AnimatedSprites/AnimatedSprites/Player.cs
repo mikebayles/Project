@@ -37,8 +37,8 @@ namespace AnimatedSprites
         public int HP { get; set; }
 
         SpriteEffects currentEffect = SpriteEffects.None;
-        
 
+        public bool rocketLauncherAvailable = false;
         public enum Weapon
         {
             MachineGun,
@@ -167,7 +167,7 @@ namespace AnimatedSprites
                 level = 0;
                 SelectedWeapon = Weapon.MachineGun;
             }
-            else if (kbState.IsKeyDown(Keys.D2))
+            else if (kbState.IsKeyDown(Keys.D2) && rocketLauncherAvailable)
             {
                 level = 1;
                 SelectedWeapon = Weapon.RocketLauncher;

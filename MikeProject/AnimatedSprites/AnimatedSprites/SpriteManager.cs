@@ -30,6 +30,7 @@ namespace AnimatedSprites
         public Texture2D background;
         public SpriteFont font;
         int score = 0;
+        public int highScore = 0;
 
         //A sprite for the player and a list of automated sprites
         Player player;
@@ -48,16 +49,29 @@ namespace AnimatedSprites
         int basicEnemyDamage = 10;
 
         int midEnemyScoreValue = 100;
-        int midEnemyHP = 200;
+        int midEnemyHP = 80;
         int midEnemyDamage = 30;
 
         int advEnemyScoreValue = 150;
-        int advEnemyHP = 500;
+        int advEnemyHP = 160;
         int advEnemyDamage = 100;
 
+        int bossHP = 50000;
+        int bossScoreValue = 10000;
+
+        int shipScoreValue = 100;
+        int shipHP = 1000;
+        int shipDamage = 1000;
+
+        int bombScoreValue = 10;
+        int bombHP = 50;
+        int bombDamage = 1000;
+
         int machineGunBulletDamage = 50;
-        int rocketLauncherDamage = 80;
+        int rocketLauncherDamage = 70;
         int lazerDamage = 1000;
+
+    
 
         int nextLazerTime = 3500;
         float mAlphaValue = 1;
@@ -117,6 +131,9 @@ namespace AnimatedSprites
                 Game.Content.Load<Texture2D>(@"Images/cross1"), new Vector2(100, 100), new Point(50, 50), 10, new Point(0, 0),
                 new Point(1, 1), new Vector2(2, 2));
 
+
+            string text = System.IO.File.ReadAllText("scores.txt");
+            highScore = int.Parse(text);
             //camera = new Camera(GraphicsDevice.Viewport);
             base.LoadContent();
         }
@@ -140,9 +157,10 @@ namespace AnimatedSprites
                 ResetSpawnTime();
             }
 
-            if (nextBombTime <= 0)
+            AutomatedSprite ship = (AutomatedSprite)spriteList.Where(a => a.collisionCueName == "ship").FirstOrDefault();
+            if (ship != null &&(ship.GetPosition.X == player.position.X || nextBombTime <= 0))
             {
-                DropBomb();
+                DropBomb(ship);
 
                 nextBombTime = 2500;
             }
@@ -193,6 +211,8 @@ namespace AnimatedSprites
                             if (s.HP <= 0)
                             {
                                 score += s.ScoreValue;
+                                if (score > highScore)
+                                    highScore = score;
                                 spriteList.RemoveAt(i);
                                 i--;
                                 break;
@@ -222,6 +242,9 @@ namespace AnimatedSprites
                     spriteList.RemoveAt(i);
                     i--;
                 }
+
+                if(currentKey.IsKeyDown(Keys.Y))
+                    ((Game1)Game).gamestate = Game1.GameState.GameFinished;
 
             }
 
@@ -264,7 +287,7 @@ namespace AnimatedSprites
             else if (player.SelectedWeapon == Player.Weapon.RocketLauncher)
             {
                 bullet = new Bullet(Game.Content.Load<Texture2D>(@"Images\projectile"), player.rotation, rocketLauncherDamage, 5, 20);
-                bullet.keepGoing = true;
+                bullet.keepGoing = false;
                 weaponSound = "rocket";
             }
 
@@ -312,13 +335,13 @@ namespace AnimatedSprites
                 enemySpawnMaxMilliseconds);
         }
 
-        public void DropBomb()
+        void DropBomb(AutomatedSprite s)
         {
-            AutomatedSprite s = (AutomatedSprite)spriteList.Where(a => a.collisionCueName == "ship").FirstOrDefault();
+            
             if (s != null)
             {
                 AutomatedSprite bomb = new AutomatedSprite(Game.Content.Load<Texture2D>(@"Images/bomb"), s.GetPosition + new Vector2(0, 2), new Point(57, 60),
-                        10, Point.Zero, new Point(1, 1), new Vector2(0, 10), 56, null, 1f, 10, 10, 1000);
+                        10, Point.Zero, new Point(1, 1), new Vector2(0, 10), 56, null, 1f, bombScoreValue, bombHP, bombDamage);
                 bomb.Bounce = false;
                 spriteList.Add(bomb);
             }
@@ -326,29 +349,34 @@ namespace AnimatedSprites
 
         private void SpawnEnemy()
         {
-            if (score <= 900)
+            if (spriteList.Where(a => a.collisionCueName == "ship").Count() == 0)
             {
                 spriteList.Add(new AutomatedSprite(Game.Content.Load<Texture2D>(@"Images/ship"),new Vector2(600,50),new Point(130,111),
-                    10,Point.Zero,new Point(1,1),new Vector2(-5,0),56,"ship",1f,100,10,10));
+                    10,Point.Zero,new Point(1,1),new Vector2(-5,0),56,"ship",1f,shipScoreValue,shipHP,shipDamage));
             }
 
 
-            else if (score <= 1000)
+            if (score <= 1000)
             {
                 spriteList.Add(new AutomatedSprite(Game.Content.Load<Texture2D>(@"Images/femaleEnemy"), new Vector2(700, 400), new Point(30, 40),
                     10, Point.Zero, new Point(7, 1), new Vector2(-1, 0), 56, null, 2f, basicEnemyScoreValue, basicEnemyHP, basicEnemyDamage));
             }
             else if (score <= 2000)
             {
+                player.rocketLauncherAvailable = true;
                 spriteList.Add(new AutomatedSprite(Game.Content.Load<Texture2D>(@"Images/classEnemy"), new Vector2(700, 400), new Point(30, 40),
                     10, Point.Zero, new Point(7, 1), new Vector2(-2, 0), 56, null, 2f, midEnemyScoreValue, midEnemyHP, midEnemyDamage));
             }
-            else
+            else if (score <= 15000)
             {
                 spriteList.Add(new AutomatedSprite(
                     Game.Content.Load<Texture2D>(@"Images/fatEnemy"), new Vector2(700, 330), new Point(47, 70),
                     10, Point.Zero, new Point(4, 1), new Vector2(-3, 0),
                     126, null, 2f, advEnemyScoreValue, advEnemyHP, advEnemyDamage));
+            }
+            else
+            {
+
             }
         }
         public override void Draw(GameTime gameTime)
@@ -360,7 +388,8 @@ namespace AnimatedSprites
             //Draw the background
             spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
             
-            spriteBatch.DrawString(font, "Score : " + score, new Vector2(10, 10), Color.Red);
+            spriteBatch.DrawString(font, "Score : " + score, new Vector2(10, 30), Color.Red);
+            spriteBatch.DrawString(font, "High Score : " + highScore, new Vector2(10, 10), Color.Red);
             // Draw the player
             player.Draw(spriteBatch);
             spriteBatch.Draw(health, healthRect, Color.White);

@@ -43,7 +43,8 @@ namespace AnimatedSprites
             InGame,
             GameOver,
             GamePause,
-            AboutGame
+            AboutGame,
+            GameFinished
         }
         
 
@@ -98,8 +99,8 @@ namespace AnimatedSprites
             waveBank = new WaveBank(audioEngine, @"Content\Audio\Wave Bank.xwb");
             soundBank = new SoundBank(audioEngine, @"Content\Audio\Sound Bank.xsb");
 
-            trackCue = soundBank.GetCue("start");
-            trackCue.Play();
+            
+            
         }
 
         protected override void UnloadContent()
@@ -140,6 +141,7 @@ namespace AnimatedSprites
                         gamestate = GameState.Menu;
                         spriteManager.Enabled = false;
                         spriteManager.Visible = false;
+                        
                     }
                     break;
                 case GameState.InGame:
@@ -150,6 +152,10 @@ namespace AnimatedSprites
                         spriteManager.Enabled = false;
                         spriteManager.Visible = false;
                     }
+                    if(trackCue == null)
+                        trackCue = soundBank.GetCue("start");
+                    if(!trackCue.IsPlaying)
+                        trackCue.Play();
                     break;
                 case GameState.GameOver:
                     
@@ -174,6 +180,14 @@ namespace AnimatedSprites
                         spriteManager.Enabled = false;
                         spriteManager.Visible = false;
                     }
+                    break;
+
+                case GameState.GameFinished:
+                
+                    spriteManager.Enabled = false;
+                    spriteManager.Visible = false;
+                    if(trackCue.IsPlaying)
+                        trackCue.Stop(AudioStopOptions.Immediate);
                     break;
             }
          
@@ -257,9 +271,9 @@ namespace AnimatedSprites
                     text = "Instructions";
                     move = "How to Move:";
                     movement = "Up: Up Direction Key or W Key\nDown: Down Direction Key or S Key\nLeft: Left Direction Key or A Key\nRight: Right Direction Key or D Key ";
-                    goal = "Goal:\nThe goal of Space Alien 2.0 is to survive till the end.\nOnce all the aliens are killed, You will be fighting against main boss. \nYou have to reach and kill him to get his spaceship to go back to earth.";
+                    goal = "Goal:\nThe goal of Space Alien 2.0 is to survive till the end.\nOnce all the aliens are killed,\nYou will be fighting against main boss. \nYou have to reach and kill him to\nget his spaceship to go back to earth.";
 
-                    how = "How to Win:\nKill all zombies through the use of the Hand Gun, Shotgun, or Machine Gun to progress\nthrough each level.";
+                    how = "How to Win:\nKill all aliens through the use of the Hand Gun,\nRocket Launcher, or Lazer to progress\nthrough each level.";
 
                     spriteBatch.DrawString(spriteManager.font, text + "\n\n" + move + "\n" + movement + "\n\n" + goal + "\n\n" + how, new Vector2(10,0), Color.Brown);
 
@@ -283,9 +297,10 @@ namespace AnimatedSprites
 
                     string StartText = "Now entering Be prepared to fight!";
                     spriteBatch.DrawString(spriteManager.font, StartText,
-                        new Vector2((Window.ClientBounds.Width / 2) - (spriteManager.font.MeasureString(text).X / 2),
-                        (Window.ClientBounds.Height / 2) - (spriteManager.font.MeasureString(text).Y / 2)),
+                        new Vector2((Window.ClientBounds.Width / 2) - (spriteManager.font.MeasureString(StartText).X / 2),
+                        (Window.ClientBounds.Height / 2) - (spriteManager.font.MeasureString(StartText).Y / 2)),
                         Color.Black);
+                       
 
                     text = "(Press the ENTER key to begin.)";
                     spriteBatch.DrawString(spriteManager.font, text,
@@ -307,8 +322,8 @@ namespace AnimatedSprites
                     + "Weikang Yang: Developer & Graphic Designer \n\nPress 'Back' to go to the Main Menu";
                     spriteBatch.DrawString(spriteManager.font, AboutText,
                         new Vector2((300), (25)),
-                            Color.Red, 0, Vector2.Zero,
-                            1, SpriteEffects.None, 1);
+                            Color.Brown, 0, Vector2.Zero,
+                            2f, SpriteEffects.None, 1);
                     spriteBatch.DrawString(spriteManager.font, team,
                         new Vector2((50), (85)),
                             Color.Brown, 0, Vector2.Zero,
@@ -348,13 +363,39 @@ namespace AnimatedSprites
 
                 case GameState.GameOver:
                     text = "Game Over!";
+                    string text2 = "High Score : " + spriteManager.highScore;
                     spriteBatch.Begin();
                     spriteBatch.DrawString(spriteManager.font, text,
                         new Vector2((Window.ClientBounds.Width / 2) - (spriteManager.font.MeasureString(text).X / 2),
                         (Window.ClientBounds.Height / 2) - (spriteManager.font.MeasureString(text).Y / 2)),
                         Color.Green, 0, Vector2.Zero,
                         1, SpriteEffects.None, 1);
+                    spriteBatch.DrawString(spriteManager.font, text2,
+                        new Vector2((Window.ClientBounds.Width / 2) - (spriteManager.font.MeasureString(text2).X / 2),
+                        (Window.ClientBounds.Height / 2) - (spriteManager.font.MeasureString(text2).Y / 2) + 30),
+                        Color.Green, 0, Vector2.Zero,
+                        1, SpriteEffects.None, 1);
                     spriteBatch.End();
+                    System.IO.File.WriteAllLines("scores.txt", new string[] { spriteManager.highScore.ToString() });
+                    break;
+
+                case GameState.GameFinished:
+                    text = "Congratulations You Won!";
+                    text2 = "High Score : " + spriteManager.highScore;
+                    spriteBatch.Begin();
+                    spriteBatch.DrawString(spriteManager.font, text,
+                        new Vector2((Window.ClientBounds.Width / 2) - (spriteManager.font.MeasureString(text).X / 2),
+                        (Window.ClientBounds.Height / 2) - (spriteManager.font.MeasureString(text).Y / 2)),
+                        Color.Green, 0, Vector2.Zero,
+                        1, SpriteEffects.None, 1);
+                    spriteBatch.DrawString(spriteManager.font, text2,
+                        new Vector2((Window.ClientBounds.Width / 2) - (spriteManager.font.MeasureString(text2).X / 2),
+                        (Window.ClientBounds.Height / 2) - (spriteManager.font.MeasureString(text2).Y / 2) + 30),
+                        Color.Green, 0, Vector2.Zero,
+                        1, SpriteEffects.None, 1);
+                    spriteBatch.End();
+                    System.IO.File.WriteAllLines("scores.txt", new string[] { spriteManager.highScore.ToString() });
+                    //soundBank.PlayCue("end");
                     break;
             }
 
