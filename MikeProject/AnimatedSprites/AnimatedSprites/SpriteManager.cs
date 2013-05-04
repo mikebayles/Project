@@ -79,7 +79,8 @@ namespace AnimatedSprites
         Texture2D health;
         Rectangle healthRect;
 
-        //Background bg;
+        Camera camera;
+      
 
         public SpriteManager(Game game)
             : base(game)
@@ -94,7 +95,7 @@ namespace AnimatedSprites
         public override void Initialize()
         {
             // TODO: Add your initialization code here
-
+           
             base.Initialize();
         }
 
@@ -116,7 +117,7 @@ namespace AnimatedSprites
                 Game.Content.Load<Texture2D>(@"Images/cross1"), new Vector2(100, 100), new Point(50, 50), 10, new Point(0, 0),
                 new Point(1, 1), new Vector2(2, 2));
 
-            //bg.LoadContent(Game.Content);
+            //camera = new Camera(GraphicsDevice.Viewport);
             base.LoadContent();
         }
 
@@ -170,10 +171,6 @@ namespace AnimatedSprites
                 
             }
 
-
-
-            
-
             pastKey = Keyboard.GetState();
             pastMouse = Mouse.GetState();
             UpdateBullets();
@@ -181,6 +178,8 @@ namespace AnimatedSprites
             // Update all sprites
             for (int i = 0; i < spriteList.Count; i++)
             {
+                if(i <0)
+                    Console.WriteLine(i);
                 Sprite s = spriteList[i];
                 s.Update(gameTime, Game.Window.ClientBounds);
                 // Check for collisions and exit game if there is one
@@ -188,15 +187,20 @@ namespace AnimatedSprites
                 {
                     if (s.collisionRect.Intersects(b.collisionRect))
                     {
+                        if (b.isVisible)
+                        {
+                            s.HP -= b.damageValue;
+                            if (s.HP <= 0)
+                            {
+                                score += s.ScoreValue;
+                                spriteList.RemoveAt(i);
+                                i--;
+                                break;
+                            }
+                        }
                         if(!b.keepGoing)
                             b.isVisible = false;
-                        s.HP -= b.damageValue;
-                        if(s.HP <= 0)
-                        {
-                            score += s.ScoreValue;
-                            spriteList.RemoveAt(i);
-                            //i--;
-                        }
+                        
                     }
                 }
 
@@ -225,7 +229,7 @@ namespace AnimatedSprites
             if (player.HP > 0)
                 healthRect.Width = player.HP/50;
 
-            
+            //camera.Update(gameTime, player);
              base.Update(gameTime);
         }
 
@@ -250,15 +254,18 @@ namespace AnimatedSprites
         public void Shoot()
         {
             Bullet bullet = null;
+            string weaponSound = "";
             if (player.SelectedWeapon == Player.Weapon.MachineGun)
             {
                 bullet = new Bullet(Game.Content.Load<Texture2D>(@"Images\bullet"), 0f, machineGunBulletDamage, 0, 0);
                 bullet.keepGoing = false;
+                weaponSound = "gun";
             }
             else if (player.SelectedWeapon == Player.Weapon.RocketLauncher)
             {
                 bullet = new Bullet(Game.Content.Load<Texture2D>(@"Images\projectile"), player.rotation, rocketLauncherDamage, 5, 20);
                 bullet.keepGoing = true;
+                weaponSound = "rocket";
             }
 
             bullet.velocity = new Vector2((float)Math.Cos(player.rotation)*2, (float)Math.Sin(player.rotation)) * 5f;// new Vector2(player.velocity.X, player.velocity.Y);
@@ -268,7 +275,10 @@ namespace AnimatedSprites
             bullet.isVisible = true;
 
             if (bullets.Count < 20)
+            {
                 bullets.Add(bullet);
+                ((Game1)Game).soundBank.PlayCue(weaponSound);
+            }
         }
 
         public void ShootLazer()
@@ -278,6 +288,7 @@ namespace AnimatedSprites
             bullet.velocity = new Vector2(0, 15);
             bullet.isVisible = true;
             bullet.keepGoing = true;
+            ((Game1)Game).soundBank.PlayCue("lazer");
             bullets.Add(bullet);
             
         }
@@ -303,7 +314,7 @@ namespace AnimatedSprites
 
         public void DropBomb()
         {
-            Ship s = (Ship)spriteList.Where(a => a is Ship).FirstOrDefault();
+            AutomatedSprite s = (AutomatedSprite)spriteList.Where(a => a.collisionCueName == "ship").FirstOrDefault();
             if (s != null)
             {
                 AutomatedSprite bomb = new AutomatedSprite(Game.Content.Load<Texture2D>(@"Images/bomb"), s.GetPosition + new Vector2(0, 2), new Point(57, 60),
@@ -317,8 +328,8 @@ namespace AnimatedSprites
         {
             if (score <= 900)
             {
-                spriteList.Add(new Ship(Game.Content.Load<Texture2D>(@"Images/ship"),new Vector2(600,50),new Point(130,111),
-                    10,Point.Zero,new Point(1,1),new Vector2(-5,0),56,null,1f,10,10,10));
+                spriteList.Add(new AutomatedSprite(Game.Content.Load<Texture2D>(@"Images/ship"),new Vector2(600,50),new Point(130,111),
+                    10,Point.Zero,new Point(1,1),new Vector2(-5,0),56,"ship",1f,100,10,10));
             }
 
 
@@ -343,6 +354,7 @@ namespace AnimatedSprites
         public override void Draw(GameTime gameTime)
         {
 
+            //spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.AlphaBlend,null,null,null,null,camera.transform);
             spriteBatch.Begin();
             //bg.Draw(spriteBatch);
             //Draw the background

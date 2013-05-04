@@ -27,6 +27,11 @@ namespace AnimatedSprites
 
         MouseState mbd;
         MouseState Prevmbd;
+
+        public AudioEngine audioEngine;
+        public WaveBank waveBank;
+        public SoundBank soundBank;
+        public Cue trackCue;
         
 
         public enum GameState
@@ -60,7 +65,8 @@ namespace AnimatedSprites
             menuButtons.Add(new MainMenu(new Rectangle(400, 75, 100, 14), "About"));
             menuButtons.Add(new MainMenu(new Rectangle(400, 105, 100, 14), "Instructions"));
             menuButtons.Add(new MainMenu(new Rectangle(400, 135, 100, 14), "Exit"));
-              
+
+            
             rnd = new Random();
             IsMouseVisible = true;
         }
@@ -74,6 +80,7 @@ namespace AnimatedSprites
 
             spriteManager.Enabled = false;  //disables the Update method of the SpriteManager GameComponent
             spriteManager.Visible = false;  //disables the Draw method of the SpriteManager GameComponent
+            
 
             base.Initialize();
         }
@@ -85,6 +92,14 @@ namespace AnimatedSprites
             spriteBatch = new SpriteBatch(GraphicsDevice);
             mainmenuTexture = Content.Load<Texture2D>(@"Images/space_Background");
             logo = Content.Load<Texture2D>(@"Images/logo_alien");
+
+
+            audioEngine = new AudioEngine(@"Content\Audio\GameAudio.xgs");
+            waveBank = new WaveBank(audioEngine, @"Content\Audio\Wave Bank.xwb");
+            soundBank = new SoundBank(audioEngine, @"Content\Audio\Sound Bank.xsb");
+
+            trackCue = soundBank.GetCue("start");
+            trackCue.Play();
         }
 
         protected override void UnloadContent()
@@ -110,6 +125,7 @@ namespace AnimatedSprites
                         spriteManager.Enabled = true;
                         spriteManager.Visible = true;
                         menuButtons.RemoveRange(0, menuButtons.Count);
+                      
                     }
                     if (keyboard.IsKeyDown(Keys.Back))
                     {
@@ -193,6 +209,7 @@ namespace AnimatedSprites
 
             Prevmbd = mbd;
 
+            audioEngine.Update();
             base.Update(gameTime);
         }
 

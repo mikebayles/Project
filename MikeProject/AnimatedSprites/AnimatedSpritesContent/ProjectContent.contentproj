@@ -52,9 +52,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Audio\" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Images\cross.png">
       <Name>cross</Name>
       <Importer>TextureImporter</Importer>
@@ -192,6 +189,14 @@
       <Name>ship</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="Audio\GameAudio.xap">
+      <Name>GameAudio</Name>
+      <Importer>XactImporter</Importer>
+      <Processor>XactProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
