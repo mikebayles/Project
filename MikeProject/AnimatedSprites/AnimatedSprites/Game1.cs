@@ -32,7 +32,11 @@ namespace AnimatedSprites
         public WaveBank waveBank;
         public SoundBank soundBank;
         public Cue trackCue;
-        
+
+        public Video play;
+        public VideoPlayer player = new VideoPlayer();
+
+        Texture2D videoTexture;
 
         public enum GameState
         {
@@ -98,6 +102,8 @@ namespace AnimatedSprites
             audioEngine = new AudioEngine(@"Content\Audio\GameAudio.xgs");
             waveBank = new WaveBank(audioEngine, @"Content\Audio\Wave Bank.xwb");
             soundBank = new SoundBank(audioEngine, @"Content\Audio\Sound Bank.xsb");
+             
+            play = Content.Load<Video>(@"Audio\Ending_scene");  
 
             
             
@@ -186,6 +192,7 @@ namespace AnimatedSprites
                 
                     spriteManager.Enabled = false;
                     spriteManager.Visible = false;
+                    
                     if(trackCue.IsPlaying)
                         trackCue.Stop(AudioStopOptions.Immediate);
                     break;
@@ -396,6 +403,28 @@ namespace AnimatedSprites
                     spriteBatch.End();
                     System.IO.File.WriteAllLines("scores.txt", new string[] { spriteManager.highScore.ToString() });
                     //soundBank.PlayCue("end");
+
+                    player.Play(play);// Only call GetTexture if a video is playing or paused
+    if (player.State != MediaState.Stopped)
+        videoTexture = player.GetTexture();
+
+
+                    // Drawing to the rectangle will stretch the 
+                    // video to fill the screen
+                    Rectangle screen = new Rectangle(GraphicsDevice.Viewport.X,
+                        GraphicsDevice.Viewport.Y,
+                        GraphicsDevice.Viewport.Width,
+                        GraphicsDevice.Viewport.Height);
+
+                    // Draw the video, if we have a texture to draw.
+                    if (videoTexture != null)
+                    {
+                        spriteBatch.Begin();
+                        spriteBatch.Draw(videoTexture, screen, Color.White);
+                        spriteBatch.End();
+                    }
+
+                    
                     break;
             }
 

@@ -32,6 +32,8 @@ namespace AnimatedSprites
         int score = 0;
         public int highScore = 0;
 
+        
+
         //A sprite for the player and a list of automated sprites
         Player player;
         CursorSprite cursor;
@@ -131,6 +133,7 @@ namespace AnimatedSprites
                 Game.Content.Load<Texture2D>(@"Images/cross1"), new Vector2(100, 100), new Point(50, 50), 10, new Point(0, 0),
                 new Point(1, 1), new Vector2(2, 2));
 
+            
 
             string text = System.IO.File.ReadAllText("scores.txt");
             highScore = int.Parse(text);

@@ -1,12 +1,29 @@
 Content\Images\threerings.xnb
 Content\Images\skullball.xnb
-Content\Images\alien.xnb
 Content\Images\images.xnb
-Content\Images\ellenripley.xnb
 Content\Images\cursor.xnb
 Content\Images\cross.xnb
 Content\Images\cross1.xnb
 Content\Images\raptor.xnb
 Content\Images\bullet.xnb
-Content\Images\raptor2.xnb
+Content\Images\raptor3.xnb
+Content\Images\projectile.xnb
+Content\Images\health.xnb
+Content\Images\space_Background.xnb
+Content\Images\logo_alien.xnb
+Content\Images\classEnemy.xnb
+Content\Images\images1.xnb
+Content\Images\images2.xnb
+Content\Images\background1.xnb
+Content\Images\femaleEnemy.xnb
+Content\Images\fatEnemy.xnb
+Content\Images\lazer.xnb
+Content\Images\bomb.xnb
+Content\Images\ship1.xnb
+Content\Images\ship.xnb
 Content\ScoreFont.xnb
+Content\Audio\Ending_scene.xnb
+Content\Audio\Ending_scene.wmv
+Content\Audio\GameAudio.xgs
+Content\Audio\Wave Bank.xwb
+Content\Audio\Sound Bank.xsb
