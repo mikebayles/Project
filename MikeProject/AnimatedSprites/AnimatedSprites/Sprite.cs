@@ -17,6 +17,11 @@ namespace AnimatedSprites
         protected float scale = 1;
         protected float originalScale = 1;
 
+        public bool DieOnHit{get; set;}
+        public bool Loop { get; set; }
+        public SpriteEffects flip { get; set; }
+        public bool animationComplete = false;
+
         // Speed stuff
         Vector2 originalSpeed;
 
@@ -73,6 +78,9 @@ namespace AnimatedSprites
             this.HP = HP;
             this.Damage = Damage;
             this.scale = scale;
+            this.Loop = true;
+            this.DieOnHit = true;
+            this.flip = SpriteEffects.None;
         }
 
 
@@ -87,13 +95,23 @@ namespace AnimatedSprites
                 // Increment to next frame
                 timeSinceLastFrame = 0;
                 ++currentFrame.X;
+
+
+
                 if (currentFrame.X >= sheetSize.X)
                 {
                     currentFrame.X = 0;
                     ++currentFrame.Y;
                     if (currentFrame.Y >= sheetSize.Y)
+                    {
+                        animationComplete = true;
                         currentFrame.Y = 0;
+
+
+                    }
                 }
+                else
+                    animationComplete = false;
             }
         }
 
@@ -105,7 +123,7 @@ namespace AnimatedSprites
                     currentFrame.Y * frameSize.Y,
                     frameSize.X, frameSize.Y),
                 Color.White, 0, Vector2.Zero,
-                scale, SpriteEffects.None, 0);
+                scale, flip, 0);
         }
 
         // Gets the collision rect based on position, framesize and collision offset
@@ -133,6 +151,11 @@ namespace AnimatedSprites
             }
 
             return false;
+        }
+
+        public bool DoNotAnimate()
+        {
+            return !Loop && animationComplete;
         }
 
         public void ModifyScale(float modifier)

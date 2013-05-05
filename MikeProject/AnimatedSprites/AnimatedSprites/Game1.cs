@@ -123,6 +123,14 @@ namespace AnimatedSprites
             //the current game state
             switch (gamestate)
             {
+                case GameState.Menu:
+                    if(trackCue == null)
+                        trackCue = soundBank.GetCue("start");
+                    if(!trackCue.IsPlaying)
+                        trackCue.Play();
+                    break;
+
+
                 case GameState.Play:
                     if (keyboard.IsKeyDown(Keys.Enter))
                     {
@@ -158,10 +166,7 @@ namespace AnimatedSprites
                         spriteManager.Enabled = false;
                         spriteManager.Visible = false;
                     }
-                    if(trackCue == null)
-                        trackCue = soundBank.GetCue("start");
-                    if(!trackCue.IsPlaying)
-                        trackCue.Play();
+                    
                     break;
                 case GameState.GameOver:
                     
@@ -405,8 +410,8 @@ namespace AnimatedSprites
                     //soundBank.PlayCue("end");
 
                     player.Play(play);// Only call GetTexture if a video is playing or paused
-    if (player.State != MediaState.Stopped)
-        videoTexture = player.GetTexture();
+                    if (player.State != MediaState.Stopped)
+                        videoTexture = player.GetTexture();
 
 
                     // Drawing to the rectangle will stretch the 

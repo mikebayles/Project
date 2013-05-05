@@ -10,6 +10,9 @@ namespace AnimatedSprites
 {
     class Player
     {
+        KeyboardState currentKbState;
+        KeyboardState pastKbState;
+
         Texture2D texture;
         Rectangle frameRectangle;
         public Vector2 position;
@@ -24,6 +27,7 @@ namespace AnimatedSprites
         float timer;
         float interval = 50;
 
+        float scale = 1.8f;
         public float rotation = 0;
         Vector2 distance;
 
@@ -74,7 +78,7 @@ namespace AnimatedSprites
         public void Draw(SpriteBatch spriteBatch)
         {
 
-            spriteBatch.Draw(texture, position, frameRectangle, Color.White, 0f, origin, 1.8f, currentEffect, 0f);
+            spriteBatch.Draw(texture, position, frameRectangle, Color.White, 0f, origin, scale, currentEffect, 0f);
             
         }
 
@@ -82,7 +86,6 @@ namespace AnimatedSprites
         {
             MouseState mouse = Mouse.GetState();
 
-            
             distance.X = mouse.X - position.X;
             distance.Y = mouse.Y - position.Y;
 
@@ -108,13 +111,13 @@ namespace AnimatedSprites
 
 
 
-            KeyboardState kbState = Keyboard.GetState();
+            currentKbState = Keyboard.GetState();
 
 
-            if(kbState.IsKeyDown(Keys.Right) || kbState.IsKeyDown(Keys.D))
+            if(currentKbState.IsKeyDown(Keys.Right) || currentKbState.IsKeyDown(Keys.D))
             {
                 AnimateRight(gametime);
-                if (kbState.IsKeyDown(Keys.Space))
+                if (currentKbState.IsKeyDown(Keys.Space))
                 {
                     interval = 20;
                     velocity.X = extraSpeed;
@@ -125,10 +128,10 @@ namespace AnimatedSprites
                     velocity.X = normalSpeed;
                 }
             }
-            else if(kbState.IsKeyDown(Keys.Left) || kbState.IsKeyDown(Keys.A))
+            else if(currentKbState.IsKeyDown(Keys.Left) || currentKbState.IsKeyDown(Keys.A))
             {
                 AnimateRight(gametime);
-                if (kbState.IsKeyDown(Keys.Space))
+                if (currentKbState.IsKeyDown(Keys.Space))
                 {
                     interval = 20;
                     velocity.X = -extraSpeed;
@@ -141,6 +144,8 @@ namespace AnimatedSprites
             }
             else
                 velocity = Vector2.Zero;
+
+
 
             if (hasJumped)
             {
@@ -155,24 +160,39 @@ namespace AnimatedSprites
 
             else 
             {
-                if (kbState.IsKeyDown(Keys.Up) || kbState.IsKeyDown(Keys.W))
+                if (currentKbState.IsKeyDown(Keys.Up) || currentKbState.IsKeyDown(Keys.W))
                 {                  
                     hasJumped = true;
-                    jumpSpeed = -16;
+                    jumpSpeed = -19;
                 }
             }
 
-            if (kbState.IsKeyDown(Keys.D1))
+            if (currentKbState.IsKeyDown(Keys.D1))
             {
                 level = 0;
                 SelectedWeapon = Weapon.MachineGun;
             }
-            else if (kbState.IsKeyDown(Keys.D2) && rocketLauncherAvailable)
+            else if (currentKbState.IsKeyDown(Keys.D2) && rocketLauncherAvailable)
             {
                 level = 1;
                 SelectedWeapon = Weapon.RocketLauncher;
             }
 
+            if (currentKbState.IsKeyDown(Keys.Down))
+            {
+                scale = 1.5f;
+                if (!pastKbState.IsKeyDown(Keys.Down))
+                    position.Y += 30;
+            }
+            else
+            {
+                scale = 1.8f;
+                if (pastKbState.IsKeyDown(Keys.Down))
+                    position.Y -= 30;
+            }
+
+
+            pastKbState = currentKbState;
 
         }
 
