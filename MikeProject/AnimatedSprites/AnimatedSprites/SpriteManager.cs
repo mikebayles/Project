@@ -28,7 +28,7 @@ namespace AnimatedSprites
         SpriteBatch spriteBatch;
 
         public SpriteFont font;
-        int score = 500000;
+        int score = 0;
         public int highScore = 0;
 
         
@@ -68,9 +68,10 @@ namespace AnimatedSprites
         int bombHP = 50;
         int bombDamage = 1000;
 
-        int machineGunBulletDamage = 50;
+        int machineGunBulletDamage = 40;
         int rocketLauncherDamage = 70;
         int lazerDamage = 1000;
+        bool lazerAvailable = false;
 
         public Texture2D background;
         Texture2D bossTexture;
@@ -106,7 +107,7 @@ namespace AnimatedSprites
 
         AutomatedSprite boss;
         bool fightingBoss = false;
-        int nextBossMinion = 4000;
+        int nextBossMinion = 10000;
       
 
         public SpriteManager(Game game)
@@ -202,7 +203,7 @@ namespace AnimatedSprites
             if (currentMouse.LeftButton == ButtonState.Pressed && pastMouse.LeftButton == ButtonState.Released)
                 Shoot();
 
-            if (nextLazerTime <= 0)
+            if (lazerAvailable && nextLazerTime <= 0)
             {
                 mAlphaValue = 0;
                 if (currentMouse.RightButton == ButtonState.Pressed && pastMouse.RightButton == ButtonState.Released)
@@ -222,7 +223,7 @@ namespace AnimatedSprites
             UpdateSprites(gameTime);
             if (boss.animationComplete)
                 ShootFire();
-            if (boss.HP < 50000 && fightingBoss && nextBossMinion <= 0)
+            if (boss.HP < 25000 && fightingBoss && nextBossMinion <= 0)
                 SpawnBossMinion();
 
             if (player.HP > 0)
@@ -240,7 +241,7 @@ namespace AnimatedSprites
             spriteList.Add(new AutomatedSprite(Game.Content.Load<Texture2D>(@"Images/golemblood"), new Vector2(player.position.X - 100, 400),
                 new Point(118, 92), 20, Point.Zero, new Point(16, 4), Vector2.Zero, 16, "bossminion", 1f, 1, 1, 1) { DieOnHit = false, flip = SpriteEffects.FlipHorizontally });
 
-            nextBossMinion = 4000;
+            nextBossMinion = 10000;
         }
 
 
@@ -251,7 +252,7 @@ namespace AnimatedSprites
             {
                 DropBomb(ship);
 
-                nextBombTime = 2500;
+                nextBombTime = 1500;
             }
 
         }
@@ -387,7 +388,7 @@ namespace AnimatedSprites
             bullet.position = new Vector2(currentMouse.X, 0);
             bullet.velocity = new Vector2(0, 15);
             bullet.isVisible = true;
-            bullet.keepGoing = true;
+            bullet.keepGoing = !fightingBoss;
             ((Game1)Game).soundBank.PlayCue("lazer");
             bullets.Add(bullet);
             
@@ -403,8 +404,8 @@ namespace AnimatedSprites
 
 
 
-            AutomatedSprite fire = new AutomatedSprite(fireball, boss.GetPosition + new Vector2(-15, 55), new Point(45, 37),
-                10, Point.Zero, new Point(1, 1), direction, 1000, "fire", 1f, 0, 100000, 500);
+            AutomatedSprite fire = new AutomatedSprite(fireball, boss.GetPosition + new Vector2(-15, 55), new Point(35, 28),
+                10, Point.Zero, new Point(1, 1), direction, 1000, "fire", 1f, 0, 100000, 400);
             fire.Bounce = false;
             spriteList.Add(fire);
         }
@@ -433,7 +434,7 @@ namespace AnimatedSprites
             
             if (s != null)
             {
-                AutomatedSprite bomb = new AutomatedSprite(bombTexture, s.GetPosition + new Vector2(0, 2), new Point(57, 60),
+                AutomatedSprite bomb = new AutomatedSprite(bombTexture, s.GetPosition + new Vector2(0, 5), new Point(57, 60),
                         10, Point.Zero, new Point(1, 1), new Vector2(0, 10), 56, null, 1f, bombScoreValue, bombHP, bombDamage);
                 bomb.Bounce = false;
                 spriteList.Add(bomb);
@@ -452,16 +453,17 @@ namespace AnimatedSprites
             if (score <= 1000)
             {
                 spriteList.Add(new AutomatedSprite(Game.Content.Load<Texture2D>(@"Images/femaleEnemy"), new Vector2(700, 400), new Point(30, 40),
-                    10, Point.Zero, new Point(7, 1), new Vector2(-1, 0), 56, null, 2f, basicEnemyScoreValue, basicEnemyHP, basicEnemyDamage));
+                    10, Point.Zero, new Point(7, 1), new Vector2(-2.5f, 0), 56, null, 2f, basicEnemyScoreValue, basicEnemyHP, basicEnemyDamage));
             }
-            else if (score <= 2000)
+            else if (score <= 4000)
             {
                 player.rocketLauncherAvailable = true;
                 spriteList.Add(new AutomatedSprite(Game.Content.Load<Texture2D>(@"Images/classEnemy"), new Vector2(700, 400), new Point(30, 40),
-                    10, Point.Zero, new Point(7, 1), new Vector2(-2, 0), 56, null, 2f, midEnemyScoreValue, midEnemyHP, midEnemyDamage));
+                    10, Point.Zero, new Point(7, 1), new Vector2(-3, 0), 56, null, 2f, midEnemyScoreValue, midEnemyHP, midEnemyDamage));
             }
             else if (score <= 15000)
             {
+                lazerAvailable = true;
                 spriteList.Add(new AutomatedSprite(
                     Game.Content.Load<Texture2D>(@"Images/fatEnemy"), new Vector2(700, 330), new Point(47, 70),
                     10, Point.Zero, new Point(4, 1), new Vector2(-3, 0),

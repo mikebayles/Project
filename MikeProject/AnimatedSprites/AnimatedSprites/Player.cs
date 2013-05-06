@@ -178,16 +178,16 @@ namespace AnimatedSprites
                 SelectedWeapon = Weapon.RocketLauncher;
             }
 
-            if (currentKbState.IsKeyDown(Keys.Down))
+            if (currentKbState.IsKeyDown(Keys.Down) || currentKbState.IsKeyDown(Keys.S))
             {
                 scale = 1.5f;
-                if (!pastKbState.IsKeyDown(Keys.Down))
+                if (!pastKbState.IsKeyDown(Keys.Down) && !pastKbState.IsKeyDown(Keys.S))
                     position.Y += 30;
             }
             else
             {
                 scale = 1.8f;
-                if (pastKbState.IsKeyDown(Keys.Down))
+                if (pastKbState.IsKeyDown(Keys.Down) || pastKbState.IsKeyDown(Keys.S))
                     position.Y -= 30;
             }
 
